@@ -33,7 +33,12 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.widget.ArrayAdapter;
+import android.widget.SpinnerAdapter;
+import android.widget.Toast;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.github.rtyley.android.sherlock.roboguice.activity.RoboSherlockFragmentActivity;
@@ -50,7 +55,8 @@ import es.glasspixel.wlanaudit.interfaces.OnDataSourceModifiedListener;
 
 public class NetworkListActivitySwipe extends RoboSherlockFragmentActivity
 		implements ScanFragment.ScanFragmentListener,
-		SavedNetworksFragment.SavedNetworkFragmentListener {
+		SavedNetworksFragment.SavedNetworkFragmentListener,
+		OnNavigationListener {
 
 	/**
 	 * Constant to define how many fragments this activity handles
@@ -105,6 +111,11 @@ public class NetworkListActivitySwipe extends RoboSherlockFragmentActivity
 	 */
 	private MenuItem map_menu_item;
 
+	private SpinnerAdapter APSpinnerAdapter;
+
+	private String[] names = new String[] { "All Netorks", "Channel 1",
+			"Channel 2", "Channel 3" };
+
 	/**
 	 * Lifecycle management: Activity is being created
 	 */
@@ -119,6 +130,14 @@ public class NetworkListActivitySwipe extends RoboSherlockFragmentActivity
 		} else {
 			mAutoScanAction = new AutoScanAction(this);
 		}
+
+		getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+
+		APSpinnerAdapter = new ArrayAdapter<String>(this,
+				R.layout.simple_list_item_1_white, names);
+
+		getSupportActionBar()
+				.setListNavigationCallbacks(APSpinnerAdapter, this);
 
 		mFragments = new ArrayList<Fragment>();
 		mFragments.add(new ScanFragment());
@@ -379,5 +398,12 @@ public class NetworkListActivitySwipe extends RoboSherlockFragmentActivity
 		if (refresh != null)
 			refresh.setActionView(R.layout.indeterminate_progress_action);
 
+	}
+
+	@Override
+	public boolean onNavigationItemSelected(int arg0, long arg1) {
+		Toast.makeText(getApplicationContext(), names[arg0], Toast.LENGTH_LONG)
+				.show();
+		return false;
 	}
 }
